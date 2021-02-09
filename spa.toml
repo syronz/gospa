@@ -1,3 +1,4 @@
 #it can use for another directory
+port = "8080"
 public_dir = "."
 index_file = "index.html"
