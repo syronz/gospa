@@ -2,3 +2,4 @@
 port = "8080"
 public_dir = "."
 index_file = "index.html"
+cache_control = 100

@@ -19,13 +19,15 @@ xdotool search --onlyvisible --class chromium-browser windowfocus key ctrl+r
 var confContent = `#it can use for another directory
 port = "8080"
 public_dir = "."
-index_file = "index.html"`
+index_file = "index.html"
+cache_control = 10`
 
 // SPAHandler Serve from a public directory with specific index
 type SPAHandler struct {
-	Port      string `toml:"port"`
-	PublicDir string `toml:"public_dir"` // The directory from which to serve
-	IndexFile string `toml:"index_file"` // The fallback/default file to serve
+	Port         string `toml:"port"`
+	PublicDir    string `toml:"public_dir"` // The directory from which to serve
+	IndexFile    string `toml:"index_file"` // The fallback/default file to serve
+	CacheControl int    `toml:"cache_control"`
 }
 
 // Falls back to a supplied index (IndexFile) when either condition is true:
@@ -34,6 +36,7 @@ type SPAHandler struct {
 // Otherwise serves the requested file.
 func (h *SPAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p := filepath.Join(h.PublicDir, filepath.Clean(r.URL.Path))
+	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v", h.CacheControl))
 
 	if info, err := os.Stat(p); err != nil {
 		http.ServeFile(w, r, filepath.Join(h.PublicDir, h.IndexFile))
