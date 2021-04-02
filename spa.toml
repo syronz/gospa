@@ -3,3 +3,4 @@ port = "8080"
 public_dir = "."
 index_file = "index.html"
 cache_control = 100
+condition = "http://127.0.0.1:7173/api/restapi/v1/companies/1001/cities"

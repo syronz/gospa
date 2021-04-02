@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gospa/proxy"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,7 +21,8 @@ var confContent = `#it can use for another directory
 port = "8080"
 public_dir = "."
 index_file = "index.html"
-cache_control = 10`
+cache_control = 10
+condition = 127.0.0.1:7173/api`
 
 // SPAHandler Serve from a public directory with specific index
 type SPAHandler struct {
@@ -28,6 +30,7 @@ type SPAHandler struct {
 	PublicDir    string `toml:"public_dir"` // The directory from which to serve
 	IndexFile    string `toml:"index_file"` // The fallback/default file to serve
 	CacheControl int    `toml:"cache_control"`
+	Condition    string `toml:"condition"`
 }
 
 // Falls back to a supplied index (IndexFile) when either condition is true:
@@ -37,6 +40,11 @@ type SPAHandler struct {
 func (h *SPAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p := filepath.Join(h.PublicDir, filepath.Clean(r.URL.Path))
 	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v", h.CacheControl))
+
+	requestPayload := proxy.ParseRequestBody(r)
+	url := proxy.GetProxyUrl(requestPayload.ProxyCondition, h.Condition)
+	fmt.Println(">>>>>", url)
+	proxy.ServeReverseProxy(url, w, r)
 
 	if info, err := os.Stat(p); err != nil {
 		http.ServeFile(w, r, filepath.Join(h.PublicDir, h.IndexFile))
