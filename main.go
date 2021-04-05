@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"gospa/proxy"
+	"gospa/types"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -26,11 +27,12 @@ condition = 127.0.0.1:7173/api`
 
 // SPAHandler Serve from a public directory with specific index
 type SPAHandler struct {
-	Port         string `toml:"port"`
-	PublicDir    string `toml:"public_dir"` // The directory from which to serve
-	IndexFile    string `toml:"index_file"` // The fallback/default file to serve
-	CacheControl int    `toml:"cache_control"`
-	Condition    string `toml:"condition"`
+	Port         string            `toml:"port"`
+	PublicDir    string            `toml:"public_dir"` // The directory from which to serve
+	IndexFile    string            `toml:"index_file"` // The fallback/default file to serve
+	CacheControl int               `toml:"cache_control"`
+	Condition    string            `toml:"condition"`
+	Conditions   []types.Condition `toml:"conditions"`
 }
 
 // Falls back to a supplied index (IndexFile) when either condition is true:
@@ -42,8 +44,8 @@ func (h *SPAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v", h.CacheControl))
 
 	requestPayload := proxy.ParseRequestBody(r)
-	url := proxy.GetProxyUrl(requestPayload.ProxyCondition, h.Condition)
-	fmt.Println(">>>>>", url)
+	url := proxy.GetProxyUrl(requestPayload.ProxyCondition, h.Conditions)
+	fmt.Println(">>>>>", p)
 	proxy.ServeReverseProxy(url, w, r)
 
 	if info, err := os.Stat(p); err != nil {
