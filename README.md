@@ -12,3 +12,9 @@ curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://12
 curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://127.0.0.1:8080/api/restapi/v1/companies/1001/roles
 curl -H 'Accept: application/json' http://127.0.0.1:8080
 ```
+
+create a city
+```bash
+curl -d '{"city":"boukan"}' -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" -X POST http://127.0.0.1:8080/api/restapi/v1/companies/1001/cities
+
+```

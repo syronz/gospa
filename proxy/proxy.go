@@ -47,7 +47,7 @@ func ParseRequestBody(request *http.Request) RequestPayloadStruct {
 	return requestPayload
 }
 
-// Get the url for a given proxy condition
+// GetProxyUrl the url for a given proxy condition
 func GetProxyUrl(url string, conditions []types.Condition) string {
 	// proxyCondition := strings.ToUpper(url)
 
@@ -63,7 +63,7 @@ func GetProxyUrl(url string, conditions []types.Condition) string {
 	// 	return b_condtion_url
 	// }
 
-	fmt.Println("*****", conditions)
+	fmt.Println("*****", conditions, "///", url)
 
 	for _, v := range conditions {
 		if strings.HasPrefix(url, v.Source) {
@@ -71,7 +71,7 @@ func GetProxyUrl(url string, conditions []types.Condition) string {
 		}
 	}
 
-	return conditions[0].Dest
+	return url
 }
 
 // Serve a reverse proxy for a given url

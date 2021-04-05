@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -31,7 +32,6 @@ type SPAHandler struct {
 	PublicDir    string            `toml:"public_dir"` // The directory from which to serve
 	IndexFile    string            `toml:"index_file"` // The fallback/default file to serve
 	CacheControl int               `toml:"cache_control"`
-	Condition    string            `toml:"condition"`
 	Conditions   []types.Condition `toml:"conditions"`
 }
 
@@ -43,10 +43,17 @@ func (h *SPAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p := filepath.Join(h.PublicDir, filepath.Clean(r.URL.Path))
 	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v", h.CacheControl))
 
-	requestPayload := proxy.ParseRequestBody(r)
-	url := proxy.GetProxyUrl(requestPayload.ProxyCondition, h.Conditions)
-	fmt.Println(">>>>>", p)
-	proxy.ServeReverseProxy(url, w, r)
+	// requestPayload := proxy.ParseRequestBody(r)
+	url := proxy.GetProxyUrl(p, h.Conditions)
+	fmt.Println(">>>>>", p, ",,,", url, "+++", h.Conditions)
+	// proxy.ServeReverseProxy(url, w, r)
+
+	for _, v := range h.Conditions {
+		if strings.HasPrefix(p, v.Source) {
+			proxy.ServeReverseProxy(v.Dest, w, r)
+			return
+		}
+	}
 
 	if info, err := os.Stat(p); err != nil {
 		http.ServeFile(w, r, filepath.Join(h.PublicDir, h.IndexFile))
