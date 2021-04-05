@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 )
 
 type RequestPayloadStruct struct {
@@ -47,8 +48,8 @@ func ParseRequestBody(request *http.Request) RequestPayloadStruct {
 }
 
 // Get the url for a given proxy condition
-func GetProxyUrl(proxyConditionRaw string, conditions []types.Condition) string {
-	// proxyCondition := strings.ToUpper(proxyConditionRaw)
+func GetProxyUrl(url string, conditions []types.Condition) string {
+	// proxyCondition := strings.ToUpper(url)
 
 	// a_condtion_url := os.Getenv("A_CONDITION_URL")
 	// b_condtion_url := os.Getenv("B_CONDITION_URL")
@@ -65,10 +66,9 @@ func GetProxyUrl(proxyConditionRaw string, conditions []types.Condition) string 
 	fmt.Println("*****", conditions)
 
 	for _, v := range conditions {
-		if strings.Pre
-
-
-
+		if strings.HasPrefix(url, v.Source) {
+			return v.Dest
+		}
 	}
 
 	return conditions[0].Dest
