@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gospa/types"
 	"io"
 	"io/ioutil"
@@ -47,23 +46,8 @@ func ParseRequestBody(request *http.Request) RequestPayloadStruct {
 	return requestPayload
 }
 
-// GetProxyUrl the url for a given proxy condition
+// GetProxyUrl the url for a given proxy condition. DEPRECATED
 func GetProxyUrl(url string, conditions []types.Condition) string {
-	// proxyCondition := strings.ToUpper(url)
-
-	// a_condtion_url := os.Getenv("A_CONDITION_URL")
-	// b_condtion_url := os.Getenv("B_CONDITION_URL")
-	// default_condtion_url := os.Getenv("DEFAULT_CONDITION_URL")
-
-	// if proxyCondition == "A" {
-	// 	return a_condtion_url
-	// }
-
-	// if proxyCondition == "B" {
-	// 	return b_condtion_url
-	// }
-
-	fmt.Println("*****", conditions, "///", url)
 
 	for _, v := range conditions {
 		if strings.HasPrefix(url, v.Source) {
@@ -78,7 +62,6 @@ func GetProxyUrl(url string, conditions []types.Condition) string {
 func ServeReverseProxy(target string, res http.ResponseWriter, req *http.Request) {
 	// parse the url
 	url, _ := url.Parse(target)
-	fmt.Println("......>>", url)
 
 	// create the reverse proxy
 	proxy := httputil.NewSingleHostReverseProxy(url)

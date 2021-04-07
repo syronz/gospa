@@ -43,11 +43,6 @@ func (h *SPAHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p := filepath.Join(h.PublicDir, filepath.Clean(r.URL.Path))
 	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%v", h.CacheControl))
 
-	// requestPayload := proxy.ParseRequestBody(r)
-	url := proxy.GetProxyUrl(p, h.Conditions)
-	fmt.Println(">>>>>", p, ",,,", url, "+++", h.Conditions)
-	// proxy.ServeReverseProxy(url, w, r)
-
 	for _, v := range h.Conditions {
 		if strings.HasPrefix(p, v.Source) {
 			proxy.ServeReverseProxy(v.Dest, w, r)
