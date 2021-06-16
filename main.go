@@ -24,7 +24,15 @@ port = "8080"
 public_dir = "."
 index_file = "index.html"
 cache_control = 10
-condition = 127.0.0.1:7173/api`
+
+[[conditions]]
+source = 'api/restapi/v1'
+dest = 'http://127.0.0.1:7173/'
+
+[[conditions]]
+source = '11'
+dest = '2'
+`
 
 // SPAHandler Serve from a public directory with specific index
 type SPAHandler struct {
